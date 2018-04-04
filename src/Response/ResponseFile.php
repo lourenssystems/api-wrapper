@@ -1,0 +1,50 @@
+<?php
+    declare(strict_types=1);
+
+    namespace LourensSystems\ApiWrapper\Response;
+
+    /**
+     * Class ResponseFile
+     * @package LourensSystems\ApiWrapper\Response
+     */
+    class ResponseFile
+    {
+
+        /**
+         * @var Response
+         */
+        private $response;
+
+        /**
+         * ResponseFile constructor.
+         * @param Response $response
+         */
+        public function __construct(Response $response)
+        {
+            $this->response = $response;
+        }
+
+        /**
+         * Creates ResponseFile object from Response
+         * @param Response $response
+         * @return ResponseFile
+         * @throws ResponseException
+         */
+        public static function createFromResponse(Response $response)
+        {
+            if (!$response->hasHeader('Content-Type')) {
+                throw new ResponseException('Property item not set');
+            }
+
+            return new static($response);
+        }
+
+		/**
+		 * Saves file to location
+		 * @param $file
+		 */
+		public function saveTo($file)
+		{
+			file_put_contents($file, $this->response->getBody()->getContents());
+		}
+    }
