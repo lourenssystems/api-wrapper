@@ -1,5 +1,6 @@
 {
   "name": "lourenssystems/api-wrapper",
+  "description": "Base package for services like smallinvoice.ch and pingen.com",
   "homepage": "https://www.lourenssystems.ch",
   "type": "package",
   "require": {
