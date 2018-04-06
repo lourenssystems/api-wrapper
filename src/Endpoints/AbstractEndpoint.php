@@ -6,6 +6,8 @@
     use GuzzleHttp\Client;
     use GuzzleHttp\Exception\ClientException;
     use LourensSystems\ApiWrapper\Endpoints\Parameters\GetParameters;
+    use LourensSystems\ApiWrapper\Endpoints\Parameters\PdfParameters;
+    use LourensSystems\ApiWrapper\Endpoints\Parameters\PreviewParameters;
     use LourensSystems\ApiWrapper\Exception\Feature\FeatureHardLimitException;
     use LourensSystems\ApiWrapper\Exception\Feature\FeatureLimitException;
     use LourensSystems\ApiWrapper\Exception\Feature\FeatureSoftLimitException;
@@ -427,6 +429,54 @@
             if (!is_null($parameters)) {
                 if ($parameters->hasWidth()) {
                     $params[] = 'with=' . $parameters->getWith();
+                }
+            }
+
+            if (!empty($params)) {
+                $endpointUrl .= '?' . implode('&', $params);
+            }
+
+            return $this->baseUrl . $endpointUrl;
+        }
+
+        /**
+         * Prepares URL for pdf action
+         * @param string $endpointUrl
+         * @param PdfParameters|null $parameters
+         * @return string
+         */
+        protected function preparePdfUrl(string $endpointUrl, PdfParameters $parameters = null): string
+        {
+            $params = [];
+            if (!is_null($parameters)) {
+                if ($parameters->hasOptions()) {
+                    $params[] = 'options=' . $parameters->getOptions();
+                }
+            }
+
+            if (!empty($params)) {
+                $endpointUrl .= '?' . implode('&', $params);
+            }
+
+            return $this->baseUrl . $endpointUrl;
+        }
+
+        /**
+         * Prepares URL for preview action
+         * @param string $endpointUrl
+         * @param PreviewParameters|null $parameters
+         * @return string
+         */
+        protected function preparePreviewUrl(string $endpointUrl, PreviewParameters $parameters = null): string
+        {
+            $params = [];
+            if (!is_null($parameters)) {
+                if ($parameters->hasSize()) {
+                    $params[] = 'size=' . $parameters->getSize();
+                }
+
+                if ($parameters->hasPage()) {
+                    $params[] = 'page=' . $parameters->getPage();
                 }
             }
 
