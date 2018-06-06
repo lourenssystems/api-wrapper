@@ -14,23 +14,26 @@
     {
 
         /**
-         * Base api URL (to be overwritten in extending classes)
+         * Production API URL (to be overwritten in extending classes)
          * @var string
          */
-        protected static $baseUrl = '';
+        protected static $apiURLProduction = '';
 
         /**
-         * Gets specified endpoint object by provider options
+         * Staging API URL (to be overwritten in extending classes)
+         * @var string
+         */
+        protected static $apiURLStaging = '';
+
+        /**
+         * Gets specified endpoint object by provider options (baseURL provider option is required)
          * @param string $class
          * @param array $providerOptions
          * @return AbstractEndpoint
+         * @throws LSException
          */
         public static function getEndpoint(string $class, array $providerOptions): AbstractEndpoint
         {
-            if (!isset($providerOptions['baseUrl']) || !$providerOptions['baseUrl']) {
-                $providerOptions['baseUrl'] = static::$baseUrl;
-            }
-
             $provider = new Provider($providerOptions);
 
             return static::getEndpointByProvider($class, $provider);
@@ -50,15 +53,39 @@
             string $refreshToken = null
         ): AbstractEndpoint {
             if (!$provider->getBaseUrl()) {
-                if (!static::$baseUrl) {
-                    throw new LSException('Base URL is missing');
-                }
-
-                $provider->setBaseUrl(static::$baseUrl);
+                throw new LSException('Base URL is missing in provider');
             }
 
             $endpoint = new $class($provider, $refreshToken);
 
             return $endpoint;
+        }
+
+        /**
+         * Gets production API URL
+         * @return string
+         * @throws LSException
+         */
+        public static function getApiURLProduction(): string
+        {
+            if (!static::$apiURLProduction) {
+                throw new LSException('Production API URL is missing');
+            }
+
+            return static::$apiURLProduction;
+        }
+
+        /**
+         * Gets staging API URL
+         * @return string
+         * @throws LSException
+         */
+        public static function getApiURLStaging(): string
+        {
+            if (!static::$apiURLStaging) {
+                throw new LSException('Staging API URL is missing');
+            }
+
+            return static::$apiURLStaging;
         }
     }
