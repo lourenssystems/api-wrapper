@@ -6,55 +6,40 @@
     use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 
     /**
-     * Represents a generic resource owner for use with the AbstractProvider.
+     * Class ResourceOwner
+     * @package LourensSystems\ApiWrapper\OAuth2\Client\Provider
      */
     class ResourceOwner implements ResourceOwnerInterface
     {
 
         /**
-         * Raw response
-         *
+         * Data of authenticated user (resource owner)
          * @var array
          */
-        protected $response;
+        protected $authUserData = [];
 
         /**
-         * Creates new resource owner.
-         *
+         * ResourceOwner constructor.
          * @param array $response
          */
         public function __construct(array $response = array())
         {
-            $this->response = $response;
+            $this->authUserData = array_key_exists('item', $response) ? $response['item'] : [];
         }
 
         /**
-         * Get resource owner id
-         *
-         * @return string
+         * @inheritdoc
          */
         public function getId()
         {
-            return $this->response['uid'] ?: null;
+            return array_key_exists('id', $this->authUserData) ? $this->authUserData['id'] : null;
         }
 
         /**
-         * Get resource owner name
-         *
-         * @return string
-         */
-        public function getName()
-        {
-            return $this->response['display_name'] ?: null;
-        }
-
-        /**
-         * Return all of the owner details available as an array.
-         *
-         * @return array
+         * @inheritdoc
          */
         public function toArray()
         {
-            return $this->response;
+            return $this->authUserData;
         }
     }

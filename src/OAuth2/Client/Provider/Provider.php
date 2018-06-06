@@ -3,9 +3,11 @@
 
     namespace LourensSystems\ApiWrapper\OAuth2\Client\Provider;
 
+    use GuzzleHttp\Exception\ClientException;
     use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
     use League\OAuth2\Client\Token\AccessToken;
     use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
+    use Psr\Http\Message\RequestInterface;
     use Psr\Http\Message\ResponseInterface;
 
     /**
@@ -61,7 +63,7 @@
          */
         public function getBaseAuthorizationUrl()
         {
-            return isset($this->urlAuthorize) ? $this->urlAuthorize : $this->getBaseUrl() . '/authorize';
+            return isset($this->urlAuthorize) ? $this->urlAuthorize : $this->getBaseUrl() . '/auth/authorize';
         }
 
         /**
@@ -69,7 +71,7 @@
          */
         public function getBaseAccessTokenUrl(array $params)
         {
-            return isset($this->urlAccessToken) ? $this->urlAccessToken : $this->getBaseUrl() . '/access_token';
+            return isset($this->urlAccessToken) ? $this->urlAccessToken : $this->getBaseUrl() . '/auth/access-tokens';
         }
 
         /**
@@ -80,7 +82,7 @@
          */
         public function getResourceOwnerDetailsUrl(AccessToken $token)
         {
-            return isset($this->urlResourceOwnerDetails) ? $this->urlResourceOwnerDetails : $this->getBaseUrl() . '/resource/owner';
+            return isset($this->urlResourceOwnerDetails) ? $this->urlResourceOwnerDetails : $this->getBaseUrl() . '/auth/owner';
         }
 
         /**
@@ -109,18 +111,30 @@
         }
 
         /**
-         * Check a provider response for errors.
-         *
-         * @throws IdentityProviderException
-         * @param  ResponseInterface $response
-         * @param  string $data Parsed response data
-         * @return void
+         * @inheritdoc
+         */
+        public function getResponse(RequestInterface $request)
+        {
+            $response = $this->sendRequest($request);
+            $parsed = $this->parseResponse($response);
+
+            try {
+                $this->checkResponse($response, $parsed);
+            } catch (IdentityProviderException $e) {
+                throw new ClientException($e->getMessage(), $request, $response);
+            }
+
+            return $parsed;
+        }
+
+        /**
+         * @inheritdoc
          */
         protected function checkResponse(ResponseInterface $response, $data)
         {
-            if (isset($data['error'])) {
+            if ($response->getStatusCode() != 200 && $response->getStatusCode() != 201) {
                 throw new IdentityProviderException(
-                    $data['error'] ?: $response->getReasonPhrase(),
+                    isset($data['error']) ? $data['error'] : $response->getReasonPhrase(),
                     $response->getStatusCode(),
                     $response
                 );

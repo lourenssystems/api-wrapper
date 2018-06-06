@@ -206,9 +206,8 @@
          */
         protected function callApi(string $method, string $url, array $data = []): Response
         {
-            $this->checkAccessToken();
-
             try {
+                $this->checkAccessToken();
                 $request = $this->getRequest($method, $url);
                 $options = $this->prepareApiOptions($data);
 
@@ -327,8 +326,8 @@
                     break;
                 case 401:
                     $exception = AuthException::createNewWithRequestResponse($request, $response);
-                    $exception->setErrorType($body['meta']['error_type']);
-                    $exception->setHint($body['meta']['hint']);
+                    $exception->setErrorType((string)$body['meta']['error_type']);
+                    $exception->setHint((string)$body['meta']['hint']);
                     break;
                 case 402:
                     switch ($body['code']) {
