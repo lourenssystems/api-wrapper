@@ -113,6 +113,11 @@
             return $this;
         }
 
+        public function setNextOffset(): ListParameters
+        {
+            return $this->setOffset($this->getNextOffset());
+        }
+
         public function hasQ(): bool {
             return !is_null($this->q);
         }
@@ -165,5 +170,10 @@
         public function getOffset(): int
         {
             return $this->offset;
+        }
+
+        public function getNextOffset(): int
+        {
+            return (int)$this->getOffset() + ($this->hasLimit() ? $this->getLimit() : self::LIMIT_DEFAULT);
         }
     }
