@@ -8,7 +8,7 @@
     use LourensSystems\ApiWrapper\Exception\Traits\StickToDefaultValuesImplementation;
 
     /**
-     * Class PermissionsException
+     * Class NoPermissionsException
      * @package LourensSystems\ApiWrapper\Exception
      */
     class NoPermissionsException extends LSException implements StickToDefaultValues

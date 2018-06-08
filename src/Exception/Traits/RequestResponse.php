@@ -14,16 +14,19 @@
     {
 
         /**
+         * Request
          * @var RequestInterface
          */
         protected $request;
 
         /**
+         * Response
          * @var ResponseInterface
          */
         protected $response;
 
         /**
+         * Creates new object based on specified request and response
          * @param RequestInterface $request
          * @param ResponseInterface $response
          * @return static
@@ -40,22 +43,25 @@
         }
 
         /**
-         * @param RequestInterface $r
+         * Sets request
+         * @param RequestInterface $request
          */
-        public function setRequest(RequestInterface $r)
+        public function setRequest(RequestInterface $request)
         {
-            $this->request = $r;
+            $this->request = $request;
         }
 
         /**
-         * @param ResponseInterface $r
+         * Sets response
+         * @param ResponseInterface $response
          */
-        public function setResponse(ResponseInterface $r)
+        public function setResponse(ResponseInterface $response)
         {
-            $this->response = $r;
+            $this->response = $response;
         }
 
         /**
+         * Gets request
          * @return RequestInterface
          */
         public function getRequest(): RequestInterface
@@ -64,6 +70,7 @@
         }
 
         /**
+         * Gets response
          * @return ResponseInterface
          */
         public function getResponse(): ResponseInterface

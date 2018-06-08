@@ -17,6 +17,7 @@
         private $index;
 
         /**
+         * Items array
          * @var \stdClass[]
          */
         private $items;
@@ -72,16 +73,16 @@
         {
             $this->index = 0;
             $this->items = $items;
-            $this->total = $pagination->total;
-            $this->page = $pagination->page;
-            $this->pages = $pagination->pages;
-            $this->urlFirst = $pagination->first;
-            $this->urlLast = $pagination->last;
+            $this->total = (int)$pagination->total;
+            $this->page = (int)$pagination->page;
+            $this->pages = (int)$pagination->pages;
+            $this->urlFirst = (string)$pagination->first;
+            $this->urlLast = (string)$pagination->last;
             if (property_exists($pagination, 'next')) {
-                $this->urlNext = $pagination->next;
+                $this->urlNext = (string)$pagination->next;
             }
             if (property_exists($pagination, 'previous')) {
-                $this->urlPrevious = $pagination->previous;
+                $this->urlPrevious = (string)$pagination->previous;
             }
         }
 
@@ -91,7 +92,7 @@
          * @return ResponseItems
          * @throws ResponseException
          */
-        public static function createFromResponse(Response $response)
+        public static function createFromResponse(Response $response): ResponseItems
         {
             $parsedResponseBody = $response->getParsedBody();
             if (!property_exists($parsedResponseBody, 'items')) {
@@ -176,7 +177,7 @@
         }
 
         /**
-         * Returns items values in an array
+         * Returns items values as an array
          * @return array
          */
         public function getAsArray(): array
@@ -236,18 +237,18 @@
 
         /**
          * Gets URL to next page
-         * @return string
+         * @return string|null
          */
-        public function getUrlNext(): string
+        public function getUrlNext()
         {
             return $this->urlNext;
         }
 
         /**
          * Gets URL to previous page
-         * @return string
+         * @return string|null
          */
-        public function getUrlPrevious(): string
+        public function getUrlPrevious()
         {
             return $this->urlPrevious;
         }

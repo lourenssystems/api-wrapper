@@ -19,7 +19,8 @@
         public static function requiredScopesMissing(array $requiredScopes, $redirectUri = null): OAuthServerException
         {
             $errorMessage = 'Some of the required scopes are missing in the request';
-            $hint = sprintf('End user has to generate access token with: [`%s`] scopes included', implode('` `', $requiredScopes));
+            $hint = sprintf('End user has to generate access token with: [`%s`] scopes included',
+                implode('` `', $requiredScopes));
 
             return new static($errorMessage, 11, 'required_scopes_missing', 400, $hint, $redirectUri);
         }

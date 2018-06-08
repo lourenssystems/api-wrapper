@@ -11,7 +11,7 @@
     {
 
         /**
-         *
+         * Item's values
          * @var \stdClass
          */
         private $values;
@@ -31,7 +31,7 @@
          * @return ResponseItem
          * @throws ResponseException
          */
-        public static function createFromResponse(Response $response)
+        public static function createFromResponse(Response $response): ResponseItem
         {
             $parsedResponseBody = $response->getParsedBody();
             if (!property_exists($parsedResponseBody, 'item')) {
@@ -45,7 +45,7 @@
          * Creates empty ResponseItem object
          * @return ResponseItem
          */
-        public static function createEmpty()
+        public static function createEmpty(): ResponseItem
         {
             return new static(new \stdClass());
         }
@@ -64,7 +64,7 @@
          * @param string $key
          * @return bool
          */
-        public function keyExists($key)
+        public function keyExists($key): bool
         {
             return property_exists($this->values, $key);
         }
@@ -74,11 +74,13 @@
          * @param ResponseItem $compareItem
          * @return bool
          */
-        public function isEqual(ResponseItem $compareItem): bool {
+        public function isEqual(ResponseItem $compareItem): bool
+        {
             $values = $this->getAsArray();
             ksort($values);
             $compareValues = $compareItem->getAsArray();
             ksort($compareValues);
+
             return $values === $compareValues;
         }
 
@@ -87,7 +89,8 @@
          * @param array $compareValues
          * @return bool
          */
-        public function checkValues(array $compareValues) {
+        public function checkValues(array $compareValues): bool
+        {
             foreach ($compareValues as $key => $value) {
                 if ($this->keyExists($key) && $this->$key !== $value) {
                     return false;

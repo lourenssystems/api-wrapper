@@ -30,7 +30,7 @@
          * @return ResponseFile
          * @throws ResponseException
          */
-        public static function createFromResponse(Response $response)
+        public static function createFromResponse(Response $response): ResponseFile
         {
             if (!$response->hasHeader('Content-Type')) {
                 throw new ResponseException('Property item not set');
@@ -39,12 +39,12 @@
             return new static($response);
         }
 
-		/**
-		 * Saves file to location
-		 * @param $file
-		 */
-		public function saveTo($file)
-		{
-			file_put_contents($file, $this->response->getBody()->getContents());
-		}
+        /**
+         * Saves file to location
+         * @param $file
+         */
+        public function saveTo($file)
+        {
+            file_put_contents($file, $this->response->getBody()->getContents());
+        }
     }

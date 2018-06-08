@@ -13,7 +13,7 @@
     {
 
         /**
-         * Deletes specified entity
+         * Deletes specified entities
          * @param array $ids
          * @return Response
          */

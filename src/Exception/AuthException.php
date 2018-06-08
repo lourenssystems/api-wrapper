@@ -27,14 +27,16 @@
         protected $defaultMessage = 'Authentication error occurred';
 
         /**
+         * Type of error
          * @var string
          */
-        private $errorType;
+        private $errorType = '';
 
         /**
+         * Optional hint what might have gone wrong
          * @var string
          */
-        private $hint;
+        private $hint = '';
 
         /**
          * @param string $errorType

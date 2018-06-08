@@ -11,17 +11,19 @@
     {
 
         /**
+         * Value of "size" parameter (width in pixels).
          * @var int
          */
         private $size;
 
         /**
+         * Value of "page" parameter.
          * @var int
          */
         private $page;
 
         /**
-         * Sets preview size (width in pixels)
+         * Sets value of "size" parameter (value passed as width in pixels).
          * @param int $size
          * @return PreviewParameters
          */
@@ -33,25 +35,7 @@
         }
 
         /**
-         * Checks whether preview size is set
-         * @return bool
-         */
-        public function hasSize(): bool
-        {
-            return !is_null($this->size);
-        }
-
-        /**
-         * Gets preview size
-         * @return int
-         */
-        public function getSize(): int
-        {
-            return $this->size;
-        }
-
-        /**
-         * Sets preview page
+         * Sets value of "page" parameter.
          * @param int $page
          * @return PreviewParameters
          */
@@ -63,7 +47,16 @@
         }
 
         /**
-         * Checks whether preview page is set
+         * Checks if there's any value set of "size" parameter.
+         * @return bool
+         */
+        public function hasSize(): bool
+        {
+            return !is_null($this->size);
+        }
+
+        /**
+         * Checks if there's any value set of "page" parameter.
          * @return bool
          */
         public function hasPage(): bool
@@ -72,10 +65,19 @@
         }
 
         /**
-         * Gets preview page
-         * @return int
+         * Gets value of "size" parameter (width in pixels).
+         * @return int|null
          */
-        public function getPage(): int
+        public function getSize()
+        {
+            return $this->size;
+        }
+
+        /**
+         * Gets value of "page" parameter.
+         * @return int|null
+         */
+        public function getPage()
         {
             return $this->page;
         }

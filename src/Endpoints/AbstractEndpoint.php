@@ -12,6 +12,7 @@
     use LourensSystems\ApiWrapper\Exception\Feature\FeatureLimitException;
     use LourensSystems\ApiWrapper\Exception\Feature\FeatureSoftLimitException;
     use LourensSystems\ApiWrapper\Exception\Feature\FeatureTotalLimitException;
+    use LourensSystems\ApiWrapper\Exception\LSException;
     use LourensSystems\ApiWrapper\OAuth2\Client\Provider\Provider;
     use Psr\Http\Message\RequestInterface;
     use LourensSystems\ApiWrapper\Response\Response;
@@ -43,8 +44,8 @@
         const METHOD_DELETE = 'DELETE';
         const METHOD_PATCH = 'PATCH';
 
-
         /**
+         * Service provider (authorization server).
          * @var Provider
          */
         protected $provider;
@@ -55,26 +56,31 @@
         protected $httpClient;
 
         /**
+         * Base API URL
          * @var string
          */
         protected $baseUrl;
 
         /**
-         * @var
+         * Request refresh token
+         * @var string
          */
         protected $refreshToken;
 
         /**
+         * Request access token
          * @var AccessToken
          */
         protected $accessToken;
 
         /**
+         * Request scopes
          * @var array
          */
         protected $scopes = [];
 
         /**
+         * Request language
          * @var string
          */
         protected $language;
@@ -83,22 +89,22 @@
          * AbstractEndpoint constructor.
          * @param Provider $provider
          * @param string|null $refreshToken
+         * @throws \Exception
          */
         public function __construct(Provider $provider, string $refreshToken = null)
         {
-            $this->setProvider($provider);
+            $this->provider = $provider;
+            $this->baseUrl = $this->provider->getBaseUrl();
+            $this->checkBaseUrl();
+            $this->httpClient = $this->provider->getHttpClient();
 
             if ($refreshToken !== null) {
                 $this->setRefreshToken($refreshToken);
             }
-
-            $this->setBaseUrl($this->provider->getBaseUrl());
-            $this->checkBaseUrl();
-
-            $this->httpClient = $this->provider->getHttpClient();
         }
 
         /**
+         * Sets request refresh token.
          * @param string $refreshToken
          */
         public function setRefreshToken(string $refreshToken)
@@ -108,22 +114,7 @@
         }
 
         /**
-         * @param Provider $provider
-         */
-        public function setProvider(Provider $provider)
-        {
-            $this->provider = $provider;
-        }
-
-        /**
-         * @param string $baseUrl
-         */
-        public function setBaseUrl(string $baseUrl)
-        {
-            $this->baseUrl = $baseUrl;
-        }
-
-        /**
+         * Sets request access token.
          * @param AccessToken $accessToken
          */
         public function setAccessToken(AccessToken $accessToken)
@@ -132,7 +123,7 @@
         }
 
         /**
-         * Setter for custom scopes, normally scopes come from the endpoint class
+         * Sets request scopes.
          * @param array $scopes
          */
         public function setScopes(array $scopes)
@@ -141,8 +132,7 @@
         }
 
         /**
-         * Setting request language. Necessary for endpoints that return translateable content.
-         *
+         * Sets request language. Necessary for endpoints that return translatable content.
          * @param string $language
          */
         public function setLanguage(string $language)
@@ -151,16 +141,7 @@
         }
 
         /**
-         * @return AccessToken
-         */
-        public function getAccessToken(): AccessToken
-        {
-            $this->checkAccessToken();
-
-            return $this->accessToken;
-        }
-
-        /**
+         * Gets service provider (authorization server).
          * @return Provider
          */
         public function getProvider(): Provider
@@ -169,21 +150,10 @@
         }
 
         /**
-         * @throws \Exception
+         * Gets request access token.
+         * @return AccessToken
          */
-        protected function checkBaseUrl()
-        {
-            if (!preg_match('/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}' . '((:[0-9]{1,5})?\\/.*)?$/i',
-                $this->baseUrl)
-            ) {
-                throw new \Exception('Logic exception: invalid baseUrl set.');
-            }
-        }
-
-        /**
-         * Checks if access token is not set or expired, fetches new one if needed.
-         */
-        protected function checkAccessToken()
+        public function getAccessToken(): AccessToken
         {
             if (!isset($this->accessToken) || $this->accessToken->hasExpired()) {
                 if ($this->refreshToken) {
@@ -196,39 +166,54 @@
                         ['scope' => implode(' ', $this->scopes)]);
                 }
             }
+
+            return $this->accessToken;
         }
 
         /**
-         * @param string $method One of self::METHOD_XXX constants.
-         * @param string $url
-         * @param array $data
-         * @return Response
+         * Checks base URL
+         * @throws \Exception
          */
-        protected function callApi(string $method, string $url, array $data = []): Response
+        protected function checkBaseUrl()
         {
-            try {
-                $this->checkAccessToken();
-                $request = $this->getRequest($method, $url);
-                $options = $this->prepareApiOptions($data);
-
-                return Response::createFromResponse($this->httpClient->send($request, $options));
-            } catch (ClientException $e) {
-                $this->processResponse($e->getRequest(), $e->getResponse());
-            } catch (\GuzzleHttp\Exception\ServerException $e) {
-                $this->processResponse($e->getRequest(), $e->getResponse());
+            if (!preg_match('/^(http|https):\\/\\/[a-z0-9_]+([\\-\\.]{1}[a-z_0-9]+)*\\.[_a-z]{2,5}' . '((:[0-9]{1,5})?\\/.*)?$/i',
+                $this->baseUrl)
+            ) {
+                throw new LSException('Logic exception: invalid baseUrl set.');
             }
         }
 
         /**
-         * Preparing request object.
-         *
+         * Makes an API call.
+         * @param string $method
+         * @param string $url
+         * @param array $data
+         * @return Response
+         * @throws LSException
+         */
+        protected function callApi(string $method, string $url, array $data = []): Response
+        {
+            try {
+                $request = $this->getRequest($method, $url);
+                $options = $this->prepareRequestOptions($data);
+
+                return Response::createFromResponse($this->httpClient->send($request, $options));
+            } catch (ClientException $e) {
+                throw $this->getProperExceptionForResponse($e->getResponse(), $e->getRequest());
+            } catch (\GuzzleHttp\Exception\ServerException $e) {
+                throw $this->getProperExceptionForResponse($e->getResponse(), $e->getRequest());
+            }
+        }
+
+        /**
+         * Prepares and returns request object.
          * @param string $method
          * @param string $url
          * @return RequestInterface
          */
         protected function getRequest(string $method, string $url): RequestInterface
         {
-            $request = $this->provider->getAuthenticatedRequest($method, $url, $this->accessToken);
+            $request = $this->provider->getAuthenticatedRequest($method, $url, $this->getAccessToken());
 
             if (isset($this->language)) {
                 $request = $request->withHeader('Accept-Language', $this->language);
@@ -238,26 +223,27 @@
         }
 
         /**
+         * Prepares request options.
          * @param array $data
          * @return array
          */
-        protected function prepareApiOptions(array $data = [])
+        protected function prepareRequestOptions(array $data = []): array
         {
             if (isset($data['file']) && $data['file'] !== null && !empty($data['file'])) {
                 $options = $this->prepareRequestFileOptions($data);
             } else {
-                $options = $this->prepareRequestOptions($data);
+                $options = $this->prepareRequestStandardOptions($data);
             }
 
             return $options;
         }
 
         /**
-         * Prepares options for standard request
+         * Prepares request options for standard request.
          * @param array $data
          * @return array
          */
-        protected function prepareRequestOptions(array $data)
+        protected function prepareRequestStandardOptions(array $data): array
         {
             $options = [];
             if ($data !== null) {
@@ -273,11 +259,11 @@
 
 
         /**
-         * Prepares request options for sending/uploading files
+         * Prepares request options for sending/uploading files.
          * @param array $data
          * @return array
          */
-        protected function prepareRequestFileOptions(array $data)
+        protected function prepareRequestFileOptions(array $data): array
         {
             $fileExists = file_exists($data['file']['filePath']);
 
@@ -305,18 +291,12 @@
         }
 
         /**
-         * @param RequestInterface $request
+         * Checks specified response and returns proper exception.
          * @param ResponseInterface $response
-         * @throws AuthException
-         * @throws BadRequestException
-         * @throws MethodNotAllowedException
-         * @throws NotFoundException
-         * @throws NoPermissionsException
-         * @throws ServerException
-         * @throws RateLimitException
-         * @throws ValidationFailedException
+         * @param RequestInterface $request
+         * @return LSException
          */
-        protected function processResponse(RequestInterface $request, ResponseInterface $response)
+        protected function getProperExceptionForResponse(ResponseInterface $response, RequestInterface $request): LSException
         {
             $body = json_decode((string)$response->getBody(), true);
 
@@ -377,11 +357,11 @@
                     $exception = ServerException::createNewWithRequestResponse($request, $response);
             }
 
-            throw $exception;
+            return $exception;
         }
 
         /**
-         * Prepares url.
+         * Prepares url for list action.
          * @param string $endpointUrl
          * @param ListParameters|null $parameters
          * @return string
@@ -396,7 +376,7 @@
                 if ($parameters->hasFilter()) {
                     $params[] = 'filter=' . urlencode($parameters->getFilter());
                 }
-                if ($parameters->hasWidth()) {
+                if ($parameters->hasWith()) {
                     $params[] = 'with=' . $parameters->getWith();
                 }
                 if ($parameters->hasLimit()) {
@@ -418,6 +398,7 @@
         }
 
         /**
+         * prepares URL for get action
          * @param string $endpointUrl
          * @param GetParameters|null $parameters
          * @return string

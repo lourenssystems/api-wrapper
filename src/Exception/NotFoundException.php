@@ -33,7 +33,7 @@
          * Type of entity that does not exist
          * @var string
          */
-        private $entityType;
+        private $entityType = '';
 
         /**
          * Creates new exception for specified entity type
@@ -42,7 +42,7 @@
          * @param int $code
          * @return NotFoundException
          */
-        public static function createNew($entityType, $message = '', $code = 0)
+        public static function createNew($entityType, $message = '', $code = 0): NotFoundException
         {
             $new = new static($message, $code);
             $new->setEntityType($entityType);
@@ -51,7 +51,7 @@
         }
 
         /**
-         * Sets type of the entity that does not exists
+         * Sets type of the entity that does not exist
          * @param string $entityType
          */
         public function setEntityType(string $entityType)
@@ -60,7 +60,7 @@
         }
 
         /**
-         * Gets entity type
+         * Gets entity type that does not exist
          * @return string
          */
         public function getEntityType(): string

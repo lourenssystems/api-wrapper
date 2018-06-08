@@ -11,11 +11,13 @@
     {
 
         /**
+         * Response parsed body object
          * @var \stdClass
          */
         protected $parsedBody;
 
         /**
+         * Creates Response object from Psr7Response object
          * @param \GuzzleHttp\Psr7\Response $response
          * @return Response
          */
@@ -41,7 +43,9 @@
         }
 
         /**
+         * Gets ResponseItem object created from Response
          * @return ResponseItem
+         * @throws ResponseException
          */
         public function getItem(): ResponseItem
         {
@@ -49,7 +53,9 @@
         }
 
         /**
+         * Gets ResponseItems object created from Response
          * @return ResponseItems
+         * @throws ResponseException
          */
         public function getItems(): ResponseItems
         {
@@ -57,7 +63,9 @@
         }
 
         /**
+         * Gets ResponseFile object created from Response
          * @return ResponseFile
+         * @throws ResponseException
          */
         public function getFile(): ResponseFile
         {

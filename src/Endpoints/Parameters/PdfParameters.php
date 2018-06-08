@@ -11,12 +11,13 @@
     {
 
         /**
+         * Value of "options" parameter.
          * @var string
          */
         private $options;
 
         /**
-         * Sets options (as array)
+         * Sets value of "options" parameter (value passed as an array)
          * @param array $options
          * @return PdfParameters
          */
@@ -28,7 +29,7 @@
         }
 
         /**
-         * Sets options (as JSON string)
+         * Sets value of "options" parameter (value passed as a JSON string)
          * @param string $options
          * @return PdfParameters
          */
@@ -40,7 +41,7 @@
         }
 
         /**
-         * Checks whether options are set
+         * Checks if there's any value set of "options" parameter.
          * @return bool
          */
         public function hasOptions(): bool
@@ -49,10 +50,10 @@
         }
 
         /**
-         * Gets options JSON string
-         * @return string
+         * Gets value of "options" parameter.
+         * @return string|null
          */
-        public function getOptions(): string
+        public function getOptions()
         {
             return $this->options;
         }

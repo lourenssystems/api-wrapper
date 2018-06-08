@@ -6,6 +6,10 @@
     use LourensSystems\ApiWrapper\Exception\Interfaces\StickToDefaultValues;
     use LourensSystems\ApiWrapper\Exception\Validation\KeyException;
 
+    /**
+     * Class ValidationException
+     * @package LourensSystems\ApiWrapper\Exception
+     */
     class ValidationException extends LSException
     {
 

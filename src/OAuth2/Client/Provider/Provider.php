@@ -49,8 +49,7 @@
         }
 
         /**
-         * Returning base API URL.
-         *
+         * Gets base API URL
          * @return string
          */
         public function getBaseUrl(): string
@@ -59,7 +58,7 @@
         }
 
         /**
-         * @return string
+         * @inheritdoc
          */
         public function getBaseAuthorizationUrl()
         {
@@ -67,7 +66,7 @@
         }
 
         /**
-         * @return string
+         * @inheritdoc
          */
         public function getBaseAccessTokenUrl(array $params)
         {
@@ -75,10 +74,7 @@
         }
 
         /**
-         * Get provider url to fetch user details
-         *
-         * @param  AccessToken $token
-         * @return string
+         * @inheritdoc
          */
         public function getResourceOwnerDetailsUrl(AccessToken $token)
         {
@@ -86,11 +82,7 @@
         }
 
         /**
-         * Generate a user object from a successful user details request.
-		 *
-         * @param array $response
-         * @param AccessToken $token
-         * @return ResourceOwner
+         * @inheritdoc
          */
         protected function createResourceOwner(array $response, AccessToken $token)
         {
@@ -98,12 +90,7 @@
         }
 
         /**
-         * Get the default scopes used by this provider.
-         *
-         * This should not be a complete list of all scopes, but the minimum
-         * required for the provider user interface
-         *
-         * @return array
+         * @inheritdoc
          */
         protected function getDefaultScopes()
         {

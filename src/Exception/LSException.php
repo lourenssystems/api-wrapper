@@ -7,6 +7,7 @@
 
     /**
      * Class LSException
+     * @package LourensSystems\ApiWrapper\Exception
      */
     class LSException extends Exception
     {

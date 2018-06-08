@@ -30,7 +30,7 @@
          * Feature name
          * @var string
          */
-        private $feature;
+        private $feature = '';
 
         /**
          * Array of plans that provide missing feature
@@ -44,7 +44,7 @@
          * @param string $plans
          * @return static
          */
-        public static function createNew(string $feature, array $plans = [])
+        public static function createNew(string $feature, array $plans = []): NoFeatureException
         {
             $exception = new static();
             $exception->setFeature($feature);
