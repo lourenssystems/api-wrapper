@@ -103,11 +103,13 @@
         public function getResponse(RequestInterface $request)
         {
             $response = $this->sendRequest($request);
-            $parsed = $this->parseResponse($response);
 
             try {
+                $parsed = $this->parseResponse($response);
                 $this->checkResponse($response, $parsed);
             } catch (IdentityProviderException $e) {
+                throw new ClientException($e->getMessage(), $request, $response);
+            } catch (\UnexpectedValueException $e) {
                 throw new ClientException($e->getMessage(), $request, $response);
             }
 

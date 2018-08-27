@@ -8,6 +8,7 @@
     use LourensSystems\ApiWrapper\Endpoints\Parameters\GetParameters;
     use LourensSystems\ApiWrapper\Endpoints\Parameters\PdfParameters;
     use LourensSystems\ApiWrapper\Endpoints\Parameters\PreviewParameters;
+    use LourensSystems\ApiWrapper\Exception\ApplicationOfflineException;
     use LourensSystems\ApiWrapper\Exception\Feature\FeatureHardLimitException;
     use LourensSystems\ApiWrapper\Exception\Feature\FeatureLimitException;
     use LourensSystems\ApiWrapper\Exception\Feature\FeatureSoftLimitException;
@@ -351,6 +352,9 @@
                     break;
                 case 429:
                     $exception = RateLimitException::createNewWithRequestResponse($request, $response);
+                    break;
+                case 503:
+                    $exception = ApplicationOfflineException::createNewWithRequestResponse($request, $response);
                     break;
                 case 500:
                 default:
