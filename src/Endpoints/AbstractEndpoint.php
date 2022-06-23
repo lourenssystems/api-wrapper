@@ -5,6 +5,7 @@
 
     use GuzzleHttp\Client;
     use GuzzleHttp\Exception\ClientException;
+    use Laminas\Diactoros\Stream;
     use LourensSystems\ApiWrapper\Endpoints\Parameters\GetParameters;
     use LourensSystems\ApiWrapper\Endpoints\Parameters\PdfParameters;
     use LourensSystems\ApiWrapper\Endpoints\Parameters\PreviewParameters;
@@ -20,7 +21,6 @@
     use LourensSystems\ApiWrapper\Endpoints\Parameters\ListParameters;
     use LourensSystems\ApiWrapper\Exception\BadRequestException;
     use LourensSystems\ApiWrapper\Exception\RateLimitException;
-    use Zend\Diactoros\Stream;
     use League\OAuth2\Client\Token\AccessToken;
     use Psr\Http\Message\ResponseInterface;
     use LourensSystems\ApiWrapper\Exception\AuthException;
